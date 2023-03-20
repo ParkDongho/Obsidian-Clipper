@@ -227,7 +227,7 @@ def login2IEEEXplore():
 
 
 driver = webdriver.Chrome('../chromedriver')
-login2IEEEXplore()
+# login2IEEEXplore()
 
 while (True):
   nextWork = input("contuinue?? : ")
