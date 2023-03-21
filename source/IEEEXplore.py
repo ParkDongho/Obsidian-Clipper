@@ -13,6 +13,20 @@ ieee_date =                    '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-
 ieee_published_in =            '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-root/div/xpl-document-details/div/div[1]/div/div[2]/section/div[2]/div/xpl-document-abstract/section/div[2]/div[2]'
 ieee_doi =                     '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-root/div/xpl-document-details/div/div[1]/div/div[2]/section/div[2]/div/xpl-document-abstract/section/div[2]/div[3]/div[2]/div[2]/a'
 
+
+def dateConverter(date):
+  result = date.replace("Date of Conference: ", "")
+  strln = len(result)
+  year = result[strln - 4 : strln]
+  month = ""
+  monthList = [["January", "01"], ["February", "02"], ["March", "03"], ["April", "04"], ["May", "05"], ["June", "06"], ["July", "07"], ["August", "08"], ["September", "09"], ["October", "10"], ["November", "11"], ["December", "12"]]
+  for m in monthList:
+    if result.find(m[0]) > 0:
+      month = m[1]
+      break
+  day = result[0:result.find("-")]
+  return year +"-"+ month +"-"+ day
+
 def getBody(input):
   a = []
   for j in input.contents:
@@ -245,8 +259,8 @@ while (True):
 
   title = driver.find_element(By.XPATH, ieee_title).text
   abstract = driver.find_element(By.XPATH, ieee_abstract).text
-  date = driver.find_element(By.XPATH, ieee_date).text
-  published_in = driver.find_element(By.XPATH, ieee_published_in).text
+  date = dateConverter(driver.find_element(By.XPATH, ieee_date).text)
+  published_in = (driver.find_element(By.XPATH, ieee_published_in).text).replace("Published in: ", "")
   doi = driver.find_element(By.XPATH, ieee_doi).text
 
   file_name = title.replace(':', '')
@@ -266,7 +280,7 @@ while (True):
 
   frontmeter = frontmeter + "> ** LINKS **\n"
   frontmeter = frontmeter + "> index: \n"
-  frontmeter = frontmeter + "> baseline: [[]]\n"
+  frontmeter = frontmeter + "> baseline: [[]]\n\n\n"
 
   text_result = text_result + frontmeter
 
