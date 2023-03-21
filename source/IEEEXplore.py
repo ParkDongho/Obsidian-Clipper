@@ -12,6 +12,7 @@ ieee_abstract =                '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-
 ieee_date =                    '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-root/div/xpl-document-details/div/div[1]/div/div[2]/section/div[2]/div/xpl-document-abstract/section/div[2]/div[3]/div[1]/div[1]'
 ieee_published_in =            '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-root/div/xpl-document-details/div/div[1]/div/div[2]/section/div[2]/div/xpl-document-abstract/section/div[2]/div[2]'
 ieee_doi =                     '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-root/div/xpl-document-details/div/div[1]/div/div[2]/section/div[2]/div/xpl-document-abstract/section/div[2]/div[3]/div[2]/div[2]/a'
+ieee_citation_count =          '//*[@id="LayoutWrapper"]/div/div/div[3]/div/xpl-root/div/xpl-document-details/div/div[1]/section[2]/div/xpl-document-header/section/div[2]/div/div/div[3]/div[2]/div[1]/div[1]/button[1]/div[1]'
 
 
 def dateConverter(date):
@@ -64,7 +65,7 @@ def getFig(i):
     addr = i.contents[1].contents[0].attrs['href']
     type = "figure"
     if (len(i.contents) == 4): #일반적인...
-      title =       i.contents[2].contents[0].text
+      title = i.contents[2].contents[0].text
       if (len(i.contents[2].contents[1].contents[0].contents) > 2):  # text에 수식 포함
         tmp = i.contents[2].contents[1].contents[0].contents
         [text, inline_formula, disp_formula] = getText(tmp)
@@ -84,6 +85,7 @@ def getFig(i):
       title = "ERROR : getFig - Figure - ERROR"
       description = "ERROR : getFig - Figure - ERROR"
       type = "figure"
+
     return [description, 'https://ieeexplore.ieee.org' + addr, title, type]
   # Table
   elif i.name == 'div' and (i.attrs['class'][2] == 'table'):
@@ -112,6 +114,16 @@ def getFig(i):
       title = "ERROR : getFig - Table - ERROR"
       description = "ERROR : getFig - Table - ERROR"
       type = "table"
+
+    replaceText = title.replace("TABLE", "Table") + "- "
+    replaceText = replaceText.replace("\n", "")
+    replaceText = replaceText.replace(" - ", "- ")
+
+    description = description.replace(replaceText, "")
+    title = title.replace("\n", "")
+    description = description.replace("\n", "")
+
+
     return [description, 'https://ieeexplore.ieee.org' + addr, title, type]
   else:
     return ['error', 'a', 'a']
@@ -262,6 +274,7 @@ while (True):
   date = dateConverter(driver.find_element(By.XPATH, ieee_date).text)
   published_in = (driver.find_element(By.XPATH, ieee_published_in).text).replace("Published in: ", "")
   doi = driver.find_element(By.XPATH, ieee_doi).text
+  citation_count = driver.find_element(By.XPATH, ieee_citation_count).text
 
   file_name = title.replace(':', '')
   file_name = "../result/IEEEXplore/" + file_name + '.md'
@@ -275,6 +288,7 @@ while (True):
   frontmeter = frontmeter + "date  : "        + date + "\n"
   frontmeter = frontmeter + "published_in : " + published_in + "\n"
   frontmeter = frontmeter + "doi : "          + doi + "\n"
+  frontmeter = frontmeter + "citation_count : " + citation_count + "\n"
   frontmeter = frontmeter + "tags : []" + "\n"
   frontmeter = frontmeter + "---\n\n"
 

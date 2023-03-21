@@ -48,8 +48,8 @@ def Equation2P(strInput):
         elif data == "$" and eqStart == True:
             tmp = tmp + data
 
-            inline.append([tmp, "{inline_num_" + str(inline_num) + "}"])
-            result = result + "{inline_num_" + str(inline_num) + "}"
+            inline.append([tmp, "{INLINE_EQU_" + str(inline_num) + "}"])
+            result = result + "{INLINE_EQU_" + str(inline_num) + "}"
 
             eqStart = False
             inline_num = inline_num + 1
@@ -70,6 +70,7 @@ directory = os.listdir("../result/IEEEXplore/")
 
 for doc_name in directory:
     english = open("../result/IEEEXplore/"     + str(doc_name), 'r')
+    print(doc_name)
     korean  = open("../translated/IEEEXplore/" + str(doc_name), 'w')
     englishList = english.readlines()
     equationStart = 0
@@ -77,7 +78,7 @@ for doc_name in directory:
 
     for line in englishList:
         parsed = parsing(line)
-        if line[0] == "#" and equationStart == 0:
+        if line[0] == "#" and equationStart == 0: #제목
             korean.write(line)
             textStart = 1
 
@@ -107,6 +108,7 @@ for doc_name in directory:
                 translated = translate(result)
                 converted = P2Equation([translated, inline])
                 korean.write(converted + "\n")
+                korean.write("<details> <summary> 원문 </summary>  \n" + line + "</details>\n")
         else:
             korean.write(line)
 
